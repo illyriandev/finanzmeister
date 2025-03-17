@@ -7,5 +7,670 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<Welcome />
+	<div x-data="dashboard()">
+        <!-- Header -->
+        <header class="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-white px-6">
+            <div class="flex items-center gap-2 font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                    <path d="M3 3h18v18H3z"></path>
+                    <path d="M3 9h18"></path>
+                    <path d="M3 15h18"></path>
+                    <path d="M9 9v12"></path>
+                    <path d="M15 9v12"></path>
+                </svg>
+                <span>FinanzMeister</span>
+            </div>
+            <nav class="hidden flex-1 md:flex">
+                <ul class="flex gap-4 px-4">
+                    <li>
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600">
+                            Overview
+                        </button>
+                    </li>
+                    <li>
+                        <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-primary-600">
+                            Transactions
+                        </button>
+                    </li>
+                    <li>
+                        <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-primary-600">
+                            Invoices
+                        </button>
+                    </li>
+                    <li>
+                        <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-primary-600">
+                            Reports
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            <div class="flex items-center gap-4 md:ml-auto">
+                <button class="relative rounded-full p-2 text-gray-500 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                    </svg>
+                    <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-[10px] text-white">
+                        3
+                    </span>
+                </button>
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-700">
+                        JD
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5" style="display: none;">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Tax Documents</a>
+                        <div class="border-t border-gray-100"></div>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Log out</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="p-6 md:p-8">
+            <div class="grid gap-6">
+                <!-- Dashboard Header -->
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
+                        <p class="text-gray-500">
+                            Financial overview for your business
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Export
+                        </button>
+                        <button class="inline-flex items-center justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium bg-blue-500 hover:bg-blue-600/70 text-white shadow-sm hover:bg-primary-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            New Invoice
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <!-- Total Revenue -->
+                    <div class="rounded-lg border bg-white p-6 shadow-sm">
+                        <div class="flex flex-row items-center justify-between pb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Total Revenue</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-gray-400">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold">€42,970.00</div>
+                        <div class="flex items-center text-sm text-green-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 h-4 w-4">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            12.5% from last month
+                        </div>
+                    </div>
+                    
+                    <!-- Pending Invoices -->
+                    <div class="rounded-lg border bg-white p-6 shadow-sm">
+                        <div class="flex flex-row items-center justify-between pb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Pending Invoices</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-gray-400">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold">€2,570.00</div>
+                        <div class="text-xs text-gray-500">
+                            2 invoices awaiting payment
+                        </div>
+                    </div>
+                    
+                    <!-- Upcoming Expenses -->
+                    <div class="rounded-lg border bg-white p-6 shadow-sm">
+                        <div class="flex flex-row items-center justify-between pb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Upcoming Expenses</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-gray-400">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold">€810.00</div>
+                        <div class="text-xs text-gray-500">
+                            3 payments due this week
+                        </div>
+                    </div>
+                    
+                    <!-- Tax Savings -->
+                    <div class="rounded-lg border bg-white p-6 shadow-sm">
+                        <div class="flex flex-row items-center justify-between pb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Tax Savings</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-gray-400">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="8 14 12 10 16 14"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="10"></line>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold">€3,240.00</div>
+                        <div class="flex items-center text-sm text-green-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 h-4 w-4">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            8.2% from last quarter
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Revenue Chart and Expense Breakdown -->
+                <div class="grid gap-6 md:grid-cols-6">
+                    <!-- Revenue Chart -->
+                    <div class="rounded-lg border bg-white shadow-sm md:col-span-4">
+                        <div class="border-b p-6">
+                            <div class="flex flex-row items-center justify-between">
+                                <div>
+                                    <h3 class="font-medium">Revenue Overview</h3>
+                                    <p class="text-sm text-gray-500">Monthly revenue for the current year</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="rounded-md border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                        Monthly
+                                    </button>
+                                    <button class="rounded-md px-3 py-1 text-sm font-medium text-gray-500 hover:bg-gray-100">
+                                        Quarterly
+                                    </button>
+                                    <button class="rounded-md px-3 py-1 text-sm font-medium text-gray-500 hover:bg-gray-100">
+                                        Yearly
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="h-[300px]">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Expense Breakdown -->
+                    <div class="rounded-lg border bg-white shadow-sm md:col-span-2">
+                        <div class="border-b p-6">
+                            <h3 class="font-medium">Expense Breakdown</h3>
+                            <p class="text-sm text-gray-500">Current month by category</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="h-[300px]">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cash Flow and Upcoming Expenses -->
+                <div class="grid gap-6 md:grid-cols-6">
+                    <!-- Cash Flow -->
+                    <div class="rounded-lg border bg-white shadow-sm md:col-span-3">
+                        <div class="border-b p-6">
+                            <h3 class="font-medium">Cash Flow</h3>
+                            <p class="text-sm text-gray-500">Income vs Expenses</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="h-[250px]">
+                                <canvas id="cashFlowChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upcoming Expenses -->
+                    <div class="rounded-lg border bg-white shadow-sm md:col-span-3">
+                        <div class="flex flex-row items-center justify-between border-b p-6">
+                            <div>
+                                <h3 class="font-medium">Upcoming Expenses</h3>
+                                <p class="text-sm text-gray-500">Due within 7 days</p>
+                            </div>
+                            <button class="inline-flex items-center rounded-md px-2 py-1 text-sm font-medium text-gray-500 hover:bg-gray-100">
+                                <span>View All</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 h-4 w-4">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <!-- Expense Item 1 -->
+                                <div class="flex items-center justify-between rounded-lg border p-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="rounded-full bg-gray-100 p-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Office Rent Payment</div>
+                                            <div class="text-xs text-gray-500">Due: 06.04.2025</div>
+                                        </div>
+                                    </div>
+                                    <div class="font-medium text-red-500">€590.00</div>
+                                </div>
+                                
+                                <!-- Expense Item 2 -->
+                                <div class="flex items-center justify-between rounded-lg border p-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="rounded-full bg-gray-100 p-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Internet Provider Bill</div>
+                                            <div class="text-xs text-gray-500">Due: 06.04.2025</div>
+                                        </div>
+                                    </div>
+                                    <div class="font-medium text-red-500">€120.00</div>
+                                </div>
+                                
+                                <!-- Expense Item 3 -->
+                                <div class="flex items-center justify-between rounded-lg border p-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="rounded-full bg-gray-100 p-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Coffee and Kitchen Supplies</div>
+                                            <div class="text-xs text-gray-500">Due: 06.04.2025</div>
+                                        </div>
+                                    </div>
+                                    <div class="font-medium text-red-500">€100.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Awaiting Invoices and Budget -->
+                <div class="grid gap-6 md:grid-cols-6">
+                    <!-- Awaiting Invoices -->
+                    <div class="rounded-lg border bg-white shadow-sm md:col-span-3">
+                        <div class="flex flex-row items-center justify-between border-b p-6">
+                            <div>
+                                <h3 class="font-medium">Awaiting Invoices</h3>
+                                <p class="text-sm text-gray-500">Main Bank Account Connection</p>
+                            </div>
+                            <button class="inline-flex items-center rounded-md px-2 py-1 text-sm font-medium text-gray-500 hover:bg-gray-100">
+                                <span>View All</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 h-4 w-4">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <!-- Invoice Item 1 -->
+                                <div class="flex items-center justify-between rounded-lg border p-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="rounded-full bg-gray-100 p-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                <polyline points="10 9 9 9 8 9"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Digital Solutions Inc | March</div>
+                                            <div class="text-xs text-gray-500">Due: 31.04.2025</div>
+                                        </div>
+                                    </div>
+                                    <div class="font-medium text-green-500">€1,970.00</div>
+                                </div>
+                                
+                                <!-- Invoice Item 2 -->
+                                <div class="flex items-center justify-between rounded-lg border p-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="rounded-full bg-gray-100 p-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                <polyline points="10 9 9 9 8 9"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Meritor | Milestone payment</div>
+                                            <div class="text-xs text-gray-500">Due: 06.05.2025</div>
+                                        </div>
+                                    </div>
+                                    <div class="font-medium text-green-500">€600.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Budget -->
+                    <div class="rounded-lg border bg-white shadow-sm md:col-span-3">
+                        <div class="border-b p-6">
+                            <h3 class="font-medium">Financials</h3>
+                            <p class="text-sm text-gray-500">Budget</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-2xl font-bold">€42,970.00</div>
+                            <div class="mt-4 space-y-4">
+                                <div>
+                                    <div class="mb-1 flex items-center justify-between text-sm">
+                                        <div class="font-medium">Budget Considerations: March, 2025</div>
+                                    </div>
+                                    <div class="space-y-2 pl-4">
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-green-500">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                            <span class="text-sm">Salaries to Pay: €13,780.00</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-green-500">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                            <span class="text-sm">Tax Deductions (vary): €2,600.00</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-green-500">
+                                                  class="h-4 w-4 text-green-500">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                            <span class="text-sm">Health Insurance Contributions: €3,600.00</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-green-500">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                            <span class="text-sm">Pension Contributions: €2,700.00</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-green-500">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                            <span class="text-sm">Income Tax: €970.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tax Calendar -->
+                <div class="rounded-lg border bg-white shadow-sm">
+                    <div class="border-b p-6">
+                        <h3 class="font-medium">Tax Calendar</h3>
+                        <p class="text-sm text-gray-500">Upcoming tax deadlines</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <!-- Tax Item 1 -->
+                            <div class="flex items-center justify-between rounded-lg border p-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="rounded-full bg-red-100 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-red-500">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">Quarterly VAT Return</div>
+                                        <div class="text-xs text-gray-500">Due in 14 days</div>
+                                    </div>
+                                </div>
+                                <span class="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                                    High Priority
+                                </span>
+                            </div>
+                            
+                            <!-- Tax Item 2 -->
+                            <div class="flex items-center justify-between rounded-lg border p-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="rounded-full bg-yellow-100 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-yellow-500">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">Income Tax Prepayment</div>
+                                        <div class="text-xs text-gray-500">Due in 30 days</div>
+                                    </div>
+                                </div>
+                                <span class="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
+                                    Medium Priority
+                                </span>
+                            </div>
+                            
+                            <!-- Tax Item 3 -->
+                            <div class="flex items-center justify-between rounded-lg border p-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="rounded-full bg-blue-100 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-blue-500">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">Annual Financial Statement</div>
+                                        <div class="text-xs text-gray-500">Due in 60 days</div>
+                                    </div>
+                                </div>
+                                <span class="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
+                                    Low Priority
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Alpine.js Dashboard Data -->
+    <script lang="js">
+        function dashboard() {
+            return {
+                init() {
+                    this.initRevenueChart();
+                    this.initExpenseChart();
+                    this.initCashFlowChart();
+                },
+                initRevenueChart() {
+                    const ctx = document.getElementById('revenueChart').getContext('2d');
+                    const monthlyRevenue = [
+                        { name: "Jan", revenue: 4200 },
+                        { name: "Feb", revenue: 3800 },
+                        { name: "Mar", revenue: 5100 },
+                        { name: "Apr", revenue: 4700 },
+                        { name: "May", revenue: 5600 },
+                        { name: "Jun", revenue: 6100 },
+                        { name: "Jul", revenue: 5900 },
+                        { name: "Aug", revenue: 6300 },
+                        { name: "Sep", revenue: 7100 },
+                        { name: "Oct", revenue: 6800 },
+                        { name: "Nov", revenue: 7400 },
+                        { name: "Dec", revenue: 8200 },
+                    ];
+                    
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: monthlyRevenue.map(item => item.name),
+                            datasets: [{
+                                label: 'Revenue',
+                                data: monthlyRevenue.map(item => item.revenue),
+                                backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                                borderColor: 'rgba(14, 165, 233, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '€' + value;
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return '€' + context.parsed.y;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                initExpenseChart() {
+                    const ctx = document.getElementById('expenseChart').getContext('2d');
+                    const expenseCategories = [
+                        { name: "Office", value: 1200 },
+                        { name: "Marketing", value: 800 },
+                        { name: "Software", value: 600 },
+                        { name: "Travel", value: 400 },
+                        { name: "Other", value: 300 },
+                    ];
+                    
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: expenseCategories.map(item => item.name),
+                            datasets: [{
+                                data: expenseCategories.map(item => item.value),
+                                backgroundColor: [
+                                    'rgba(14, 165, 233, 0.7)',
+                                    'rgba(34, 197, 94, 0.7)',
+                                    'rgba(245, 158, 11, 0.7)',
+                                    'rgba(139, 92, 246, 0.7)',
+                                    'rgba(239, 68, 68, 0.7)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const value = context.parsed;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = Math.round((value / total) * 100);
+                                            return `${context.label}: €${value} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                initCashFlowChart() {
+                    const ctx = document.getElementById('cashFlowChart').getContext('2d');
+                    const cashFlowData = [
+                        { name: "Jan", income: 4200, expenses: 3100 },
+                        { name: "Feb", income: 3800, expenses: 2900 },
+                        { name: "Mar", income: 5100, expenses: 3400 },
+                        { name: "Apr", income: 4700, expenses: 3200 },
+                        { name: "May", income: 5600, expenses: 3800 },
+                        { name: "Jun", income: 6100, expenses: 4100 },
+                    ];
+                    
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: cashFlowData.map(item => item.name),
+                            datasets: [
+                                {
+                                    label: 'Income',
+                                    data: cashFlowData.map(item => item.income),
+                                    backgroundColor: 'rgba(14, 165, 233, 0.7)',
+                                    borderColor: 'rgba(14, 165, 233, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Expenses',
+                                    data: cashFlowData.map(item => item.expenses),
+                                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                                    borderColor: 'rgba(239, 68, 68, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '€' + value;
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': €' + context.parsed.y;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Initialize charts when the page loads
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('dashboard', dashboard);
+        });
+    </script>
 </Layout>
